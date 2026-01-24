@@ -1,82 +1,102 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./EmployeeForm.css";
 
-export default function EmployeeForm({ onSuccess }) {
-  const [form, setForm] = useState({
-  name: "",
-  role: "",
-  department: "",
-  salary: "",
-});
+export default function EmployeeForm({ onSuccess, editingEmployee, clearEdit }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    position: "",
+    department: "",
+    salary: "",
+  });
 
-
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (editingEmployee) {
+      setFormData(editingEmployee);
+    }
+  }, [editingEmployee]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      await api.post("/employees", form);
-      setForm({ name: "", role: "", salary: "" });
-      onSuccess(); // refresh list
-    } catch (err) {
-      alert("Failed to add employee");
-    } finally {
-      setLoading(false);
+    if (editingEmployee) {
+      await api.put(`/employees/${editingEmployee._id}`, formData);
+    } else {
+      await api.post("/employees", formData);
     }
+
+    onSuccess();
+    clearEdit && clearEdit();
+
+    setFormData({
+      name: "",
+      email: "",
+      position: "",
+      department: "",
+      salary: "",
+    });
   };
 
   return (
     <form className="employee-form" onSubmit={handleSubmit}>
-      <h3>Add Employee</h3>
+      <h2>{editingEmployee ? "Edit Employee" : "Add Employee"}</h2>
 
       <input
-        type="text"
         name="name"
-        placeholder="Employee Name"
-        value={form.name}
+        placeholder="Full Name"
+        value={formData.name}
         onChange={handleChange}
         required
       />
 
       <input
-        type="text"
-        name="role"
-        placeholder="Role"
-        value={form.role}
+        name="email"
+        type="email"
+        placeholder="Email"
+        value={formData.email}
         onChange={handleChange}
         required
       />
 
       <input
-  type="text"
-  name="department"
-  placeholder="Department"
-  value={form.department}
-  onChange={handleChange}
-  required
-/>
-
+        name="position"
+        placeholder="Position"
+        value={formData.position}
+        onChange={handleChange}
+        required
+      />
 
       <input
-        type="number"
+        name="department"
+        placeholder="Department"
+        value={formData.department}
+        onChange={handleChange}
+        required
+      />
+
+      <input
         name="salary"
+        type="number"
         placeholder="Salary"
-        value={form.salary}
+        value={formData.salary}
         onChange={handleChange}
         required
       />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Adding..." : "Add Employee"}
+      <button type="submit">
+        {editingEmployee ? "Update Employee" : "Add Employee"}
       </button>
+
+      {editingEmployee && (
+        <button type="button" onClick={clearEdit}>
+          Cancel
+        </button>
+      )}
     </form>
   );
 }
-

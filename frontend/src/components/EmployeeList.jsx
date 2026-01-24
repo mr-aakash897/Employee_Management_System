@@ -11,6 +11,7 @@ export default function EmployeeList({ employees, refresh }) {
       <h3>{e.name}</h3>
       <p>{e.role} | ₹{e.salary}</p>
       <button onClick={()=>del(e._id)}>Delete</button>
+      <button onClick={() => handleEdit(emp)}>Edit</button>
     </div>
   ));
 }
