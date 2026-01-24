@@ -1,4 +1,4 @@
-# SyntecxHub - Employee Management System (MERN Stack)
+# SyntecxHub - Employee Management System
 
 A full-stack **Employee Management System** built using the **MERN stack**, designed to manage employee records efficiently with a modern, responsive user interface and a secure backend API.<br>
 This project is developed as part of **SyntecxHub – Week 3** Task and demonstrates real-world CRUD operations, frontend-backend integration, and clean project architecture.
